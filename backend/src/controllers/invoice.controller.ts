@@ -13,7 +13,7 @@ export const getInvoices = async (req: Request, res: Response, next: NextFunctio
 
 export const getInvoiceById = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const invoice = await invoiceService.getInvoiceById(req.params.id);
+    const invoice = await invoiceService.getInvoiceById((req.params.id as string));
     res.status(200).json({ success: true, data: invoice });
   } catch (error) {
     next(error);
@@ -23,7 +23,7 @@ export const getInvoiceById = async (req: Request, res: Response, next: NextFunc
 export const updateInvoiceStatus = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const validatedData = updateInvoiceStatusSchema.parse(req.body);
-    const invoice = await invoiceService.updateInvoiceStatus(req.params.id, validatedData);
+    const invoice = await invoiceService.updateInvoiceStatus((req.params.id as string), validatedData);
     res.status(200).json({ success: true, data: invoice });
   } catch (error: any) {
     if (error.name === "ZodError") {

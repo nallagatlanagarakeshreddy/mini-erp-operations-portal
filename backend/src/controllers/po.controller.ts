@@ -28,7 +28,7 @@ export const getPos = async (req: Request, res: Response, next: NextFunction) =>
 
 export const getPoById = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const po = await poService.getPoById(req.params.id);
+    const po = await poService.getPoById((req.params.id as string));
     res.status(200).json({ success: true, data: po });
   } catch (error) {
     next(error);
@@ -38,7 +38,7 @@ export const getPoById = async (req: Request, res: Response, next: NextFunction)
 export const receivePo = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.userId;
-    const po = await poService.receivePo(req.params.id, userId);
+    const po = await poService.receivePo((req.params.id as string), userId);
     res.status(200).json({ success: true, data: po, message: "Purchase Order Received. Stock updated." });
   } catch (error) {
     next(error);

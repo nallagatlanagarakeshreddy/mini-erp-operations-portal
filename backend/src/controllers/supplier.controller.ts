@@ -28,7 +28,7 @@ export const getSuppliers = async (req: Request, res: Response, next: NextFuncti
 
 export const getSupplierById = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const supplier = await supplierService.getSupplierById(req.params.id);
+    const supplier = await supplierService.getSupplierById((req.params.id as string));
     res.status(200).json({ success: true, data: supplier });
   } catch (error) {
     next(error);
@@ -38,7 +38,7 @@ export const getSupplierById = async (req: Request, res: Response, next: NextFun
 export const updateSupplier = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const validatedData = updateSupplierSchema.parse(req.body);
-    const supplier = await supplierService.updateSupplier(req.params.id, validatedData);
+    const supplier = await supplierService.updateSupplier((req.params.id as string), validatedData);
     res.status(200).json({ success: true, data: supplier });
   } catch (error: any) {
     if (error.name === "ZodError") {

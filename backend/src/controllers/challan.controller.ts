@@ -18,7 +18,7 @@ export const getChallans = async (req: Request, res: Response, next: NextFunctio
 
 export const getChallan = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const challan = await challanService.getChallanById(req.params.id);
+    const challan = await challanService.getChallanById((req.params.id as string));
     res.status(200).json({
       success: true,
       data: challan,
@@ -52,7 +52,7 @@ export const createChallan = async (req: Request, res: Response, next: NextFunct
 
 export const confirmChallan = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const challan = await challanService.confirmChallan(req.params.id, req.user!.userId);
+    const challan = await challanService.confirmChallan((req.params.id as string), req.user!.userId);
     res.status(200).json({
       success: true,
       data: challan,
@@ -65,7 +65,7 @@ export const confirmChallan = async (req: Request, res: Response, next: NextFunc
 
 export const cancelChallan = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const challan = await challanService.cancelChallan(req.params.id);
+    const challan = await challanService.cancelChallan((req.params.id as string));
     res.status(200).json({
       success: true,
       data: challan,

@@ -18,7 +18,7 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
 
 export const getProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const product = await productService.getProductById(req.params.id);
+    const product = await productService.getProductById((req.params.id as string));
     res.status(200).json({
       success: true,
       data: product,
@@ -53,7 +53,7 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
 export const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const validatedData = updateProductSchema.parse(req.body);
-    const product = await productService.updateProduct(req.params.id, validatedData);
+    const product = await productService.updateProduct((req.params.id as string), validatedData);
     res.status(200).json({
       success: true,
       data: product,
@@ -74,7 +74,7 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
 
 export const deleteProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await productService.deleteProduct(req.params.id);
+    await productService.deleteProduct((req.params.id as string));
     res.status(200).json({
       success: true,
       message: "Product deleted successfully",
@@ -120,7 +120,7 @@ export const getAllStockMovements = async (req: Request, res: Response, next: Ne
 
 export const getStockMovements = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const movements = await productService.getStockMovements(req.params.id);
+    const movements = await productService.getStockMovements((req.params.id as string));
     res.status(200).json({
       success: true,
       data: movements,

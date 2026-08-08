@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  SALES
+  WAREHOUSE
+  ACCOUNTS
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(SALES)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum CustomerType {
+  RETAIL
+  WHOLESALE
+  DISTRIBUTOR
+}
+
+enum CustomerStatus {
+  LEAD
+  ACTIVE
+  INACTIVE
+}
+
+model Customer {
+  id           String         @id @default(uuid())
+  customerName String
+  mobile       String
+  email        String?
+  businessName String?
+  gstNumber    String?
+  customerType CustomerType   @default(RETAIL)
+  address      String?
+  status       CustomerStatus @default(LEAD)
+  followUpDate DateTime?
+  notes        String?        @db.Text
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  challans SalesChallan[]
+}
+
+model Product {
+  id                String   @id @default(uuid())
+  productName       String
+  sku               String   @unique
+  category          String
+  unitPrice         Float
+  currentStock      Int      @default(0)
+  minimumStock      Int      @default(10)
+  warehouseLocation String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  stockMovements StockMovement[]
+  challanItems   ChallanItem[]
+  purchaseOrderItems PurchaseOrderItem[]
+}
+
+enum MovementType {
+  IN
+  OUT
+}
+
+model StockMovement {
+  id              String       @id @default(uuid())
+  productId       String
+  quantityChanged Int
+  movementType    MovementType
+  reason          String?
+  createdBy       String // User ID string to keep it simple, or relation
+  createdAt       DateTime     @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+enum ChallanStatus {
+  DRAFT
+  CONFIRMED
+  CANCELLED
+}
+
+model SalesChallan {
+  id            String        @id @default(uuid())
+  challanNumber String        @unique
+  customerId    String
+  totalQuantity Int
+  status        ChallanStatus @default(DRAFT)
+  createdBy     String // User ID
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  customer Customer      @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  items    ChallanItem[]
+  invoice  Invoice?
+}
+
+model ChallanItem {
+  id                  String @id @default(uuid())
+  challanId           String
+  productId           String
+  productNameSnapshot String
+  skuSnapshot         String
+  unitPriceSnapshot   Float
+  quantity            Int
+  subtotal            Float
+
+  challan SalesChallan @relation(fields: [challanId], references: [id], onDelete: Cascade)
+  product Product      @relation(fields: [productId], references: [id], onDelete: Restrict)
+}
+
+model Supplier {
+  id           String   @id @default(uuid())
+  supplierName String
+  contactName  String?
+  email        String?
+  mobile       String?
+  address      String?
+  gstNumber    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  purchaseOrders PurchaseOrder[]
+}
+
+enum POStatus {
+  DRAFT
+  SENT
+  RECEIVED
+  CANCELLED
+}
+
+model PurchaseOrder {
+  id            String   @id @default(uuid())
+  poNumber      String   @unique
+  supplierId    String
+  totalQuantity Int
+  totalAmount   Float    @default(0)
+  status        POStatus @default(DRAFT)
+  createdBy     String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  supplier Supplier            @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  items    PurchaseOrderItem[]
+}
+
+model PurchaseOrderItem {
+  id                  String @id @default(uuid())
+  purchaseOrderId     String
+  productId           String
+  productNameSnapshot String
+  skuSnapshot         String
+  unitCostSnapshot    Float
+  quantity            Int
+  subtotal            Float
+
+  purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  product       Product       @relation(fields: [productId], references: [id], onDelete: Restrict)
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PARTIAL
+  PAID
+}
+
+model Invoice {
+  id            String        @id @default(uuid())
+  invoiceNumber String        @unique
+  challanId     String        @unique
+  totalAmount   Float
+  amountPaid    Float         @default(0)
+  status        InvoiceStatus @default(UNPAID)
+  dueDate       DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  challan SalesChallan @relation(fields: [challanId], references: [id], onDelete: Restrict)
+}

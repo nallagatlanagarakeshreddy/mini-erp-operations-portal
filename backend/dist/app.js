@@ -34,6 +34,10 @@ app.use("/api/invoices", invoice_routes_1.default);
 app.get("/api/health", (req, res) => {
     res.status(200).json({ success: true, message: "API is running" });
 });
+// Root route
+app.get("/", (req, res) => {
+    res.status(200).json({ success: true, message: "Welcome to Mini ERP API Backend!" });
+});
 // Global Error Handler
 app.use((err, req, res, next) => {
     console.error(err.stack);
